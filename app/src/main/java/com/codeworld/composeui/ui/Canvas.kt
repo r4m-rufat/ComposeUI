@@ -2,11 +2,28 @@ package com.codeworld.composeui.ui
 
 import android.content.ContentValues.TAG
 import android.util.Log
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.InfiniteRepeatableSpec
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CardElevation
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,6 +34,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
@@ -24,7 +43,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.codeworld.composeui.R
 import kotlinx.coroutines.delay
 import kotlin.math.PI
 import kotlin.math.cos
@@ -56,9 +77,7 @@ fun MakeFigure(points: List<Offset>) {
             brush = Brush.radialGradient(
                 colors = listOf(
                     Color.Red, Color.Yellow
-                ),
-                center = circleCenter,
-                radius = 50.dp.toPx()
+                ), center = circleCenter, radius = 50.dp.toPx()
             ),
             radius = 50.dp.toPx(),
         )
@@ -88,14 +107,11 @@ fun TimerMaker(totalTime: Long) {
     }
 
     Box(
-        modifier = Modifier
-            .size(250.dp),
-        contentAlignment = Alignment.Center
+        modifier = Modifier.size(250.dp), contentAlignment = Alignment.Center
     ) {
 
         Canvas(
-            modifier = Modifier
-                .size(200.dp)
+            modifier = Modifier.size(200.dp)
         ) {
 
             drawArc(
@@ -105,8 +121,7 @@ fun TimerMaker(totalTime: Long) {
                 useCenter = false,
                 size = Size(200.dp.toPx(), 200.dp.toPx()),
                 style = Stroke(
-                    width = 8.dp.toPx(),
-                    cap = StrokeCap.Round
+                    width = 8.dp.toPx(), cap = StrokeCap.Round
                 )
             )
 
@@ -118,16 +133,14 @@ fun TimerMaker(totalTime: Long) {
                         0.5F to Color(0xFFFFFB00),
                         0.75F to Color.Yellow,
                         1F to Color.Green
-                    ),
-                    endX = 100.dp.toPx()
+                    ), endX = 100.dp.toPx()
                 ),
                 startAngle = 135F,
                 sweepAngle = 270F * fractionalValue,
                 useCenter = false,
                 size = Size(200.dp.toPx(), 200.dp.toPx()),
                 style = Stroke(
-                    width = 8.dp.toPx(),
-                    cap = StrokeCap.Round
+                    width = 8.dp.toPx(), cap = StrokeCap.Round
                 )
             )
 
@@ -144,11 +157,70 @@ fun TimerMaker(totalTime: Long) {
         }
 
         Text(
-            text = "${currentTime / 1000L}",
-            style = MaterialTheme.typography.displayLarge
+            text = "${currentTime / 1000L}", style = MaterialTheme.typography.displayLarge
         )
 
     }
+
+}
+
+@Composable
+fun ShimmerAnimation() {
+
+    val transition = rememberInfiniteTransition()
+
+    val start = transition.animateFloat(
+        initialValue = -100f, targetValue = 1200f, animationSpec = InfiniteRepeatableSpec(
+            animation = tween(2000), repeatMode = RepeatMode.Restart
+        )
+    )
+
+    val end = transition.animateFloat(
+        initialValue = 0f, targetValue = 1300f, animationSpec = InfiniteRepeatableSpec(
+            animation = tween(2000), repeatMode = RepeatMode.Restart
+        )
+    )
+
+    val color = Brush.linearGradient(
+        colors = listOf(
+            Color(0xFFF7F7F7), Color(0xCD414141), Color(0xFFF7F7F7)
+        ),
+        start = Offset(start.value, start.value),
+        end = Offset(end.value,end.value)
+    )
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(250.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .background(brush = color)
+    ) {
+
+    }
+
+}
+
+@Composable
+fun RotateSun() {
+
+    val transition = rememberInfiniteTransition()
+
+    val rotationAngle by transition.animateFloat(
+        initialValue = 0f, targetValue = 360f, animationSpec = InfiniteRepeatableSpec(
+            tween(10 * 1000, easing = LinearEasing), repeatMode = RepeatMode.Restart
+        )
+    )
+
+
+    Icon(
+        painter = painterResource(id = R.drawable.ic_sun),
+        contentDescription = null,
+        modifier = Modifier
+            .padding(10.dp)
+            .size(100.dp)
+            .rotate(rotationAngle)
+    )
 
 }
 

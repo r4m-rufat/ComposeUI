@@ -32,7 +32,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.codeworld.composeui.R
-import com.codeworld.composeui.ui.theme.BlueViolet3
 import com.codeworld.composeui.ui.theme.ButtonBlue
 import com.codeworld.composeui.ui.theme.DarkerButtonBlue
 import com.codeworld.composeui.ui.theme.DeepBlue
